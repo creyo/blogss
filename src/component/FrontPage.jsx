@@ -35,7 +35,11 @@ function FrontPage() {
     const [selectedStatusId, setSelectedStatusId] = useState(null);
     const [isChecked, setIsChecked] = useState(false);
     const [checkboxStates, setCheckboxStates] = useState(finalData.map(() => true));
-    const [sortBy, setSortBy] = useState({ attribute: '', ascending: true });
+    const [sortBy, setSortBy] = useState({
+        attribute: 'title', // replace with your default sorting attribute
+        ascending: true,
+    });
+
     const [category, setCategory] = useState([])
     const [selectedCategory, setSelectedCategory] = useState("All")
     const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
@@ -63,7 +67,9 @@ function FrontPage() {
         if (error) {
             console.error('Error fetching articles:', error);
         } else {
+
             setArticles(data);
+
         }
     }
 
@@ -130,13 +136,7 @@ function FrontPage() {
     }, [articles, selectedPublicationId, selectedPostTypeId, selectedStatusId])
 
 
-    const toggleSortBy = (attribute) => {
-        if (sortBy.attribute === attribute) {
-            setSortBy({ attribute, ascending: !sortBy.ascending });
-        } else {
-            setSortBy({ attribute, ascending: true });
-        }
-    };
+
 
 
 
@@ -245,45 +245,48 @@ function FrontPage() {
 
 
 
-    const sortingFunctions = [
-        {
-            key: 'title',
-            sortFunction: (a, b, ascending) => ascending ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title),
-        },
-        {
-            key: 'seo_score',
-            sortFunction: (b, a, ascending) => ascending ? b.seo_score - a.seo_score : b.seo_score - a.seo_score,
-        },
-        {
-            key: 'date',
-            sortFunction: (a, b, ascending) => ascending ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date),
-        },
-        {
-            key: 'url',
-            sortFunction: (a, b, ascending) => ascending ? a.url.localeCompare(b.url) : b.url.localeCompare(a.url),
-        },
-    ];
-
-    const applySortingAndFilteringFunctions = (data, sortingFunctions, ascending, selectedCategoryUrl) => {
-        let filteredData = data;
-
-        // Filter based on the selectedCategoryUrl (if not "All")
-        if (selectedCategoryUrl && selectedCategoryUrl !== "All") {
-            filteredData = data.filter((item) => item.categories.url === selectedCategoryUrl);
-        }
-
-        // Apply sorting functions
-        for (const { sortFunction } of sortingFunctions) {
-            filteredData = filteredData.sort((a, b) => sortFunction(a, b, ascending));
-        }
-
-        return filteredData;
+    const toggleSortBy = (attribute) => {
+        setSortBy((prevSortBy) => {
+            if (prevSortBy.attribute === attribute) {
+                return { ...prevSortBy, ascending: !prevSortBy.ascending };
+            } else {
+                return { attribute, ascending: true };
+            }
+        });
     };
 
 
 
+   console.log(sortBy)
+      
+    const applySortingAndFilteringFunctions = (data, sortBy, selectedCategoryUrl) => {
+        let filteredData = data;
+    
+        // Filter based on the selectedCategoryUrl (if not "All")
+        if (selectedCategoryUrl && selectedCategoryUrl !== "All") {
+            filteredData = data.filter((item) => item.categories.url === selectedCategoryUrl);
+        }
+    
+        const { attribute, ascending } = sortBy;
+    
+        // Apply sorting function based on the provided attribute
+        if (attribute === 'title') {
+            filteredData = filteredData.sort((a, b) => ascending ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title));
+        } else if (attribute === 'seo_score') {
+            filteredData = filteredData.sort((a, b) => ascending ? a.seo_score - b.seo_score : b.seo_score - a.seo_score);
+        } else if (attribute === 'date') {
+            filteredData = filteredData.sort((a, b) => ascending ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date));
+        } else if (attribute === 'url') {
+            filteredData = filteredData.sort((a, b) => ascending ? a.url.localeCompare(b.url) : b.url.localeCompare(a.url));
+        }
+        console.log(filteredData)
+        return filteredData;
+        
+    };
+    
 
-    const sortedArticles = applySortingAndFilteringFunctions(finalData, sortingFunctions, sortBy.ascending, selectedCategory);
+
+    const sortedArticles = applySortingAndFilteringFunctions(finalData, sortBy, selectedCategory);
 
     useEffect(() => {
         setsortedArticlesLength(sortedArticles.length)
@@ -457,14 +460,14 @@ function FrontPage() {
                                 )}
                             </div>
                         </div>
-                        <div className="flex" onClick={() => toggleSortBy('category')}>
+                        <div className="flex" onClick={() => toggleSortBy('url')}>
                             <p>Category</p>
                             <div className="arrows">
                                 {/* Sorting icons (adjust the SVG path as needed) */}
-                                {sortBy.attribute === 'category' && sortBy.ascending ? (
+                                {sortBy.attribute === 'url' && sortBy.ascending ? (
                                     <svg style={{ marginBottom: '2px' }} xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none">
-                                        <path d="M0 6L6 0L12 6H0Z" fill="#457EFF" />
-                                    </svg>
+                                    <path d="M0 6L6 0L12 6H0Z" fill="#457EFF" />
+                                </svg>
                                 ) : (
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="7" viewBox="0 0 12 7" fill="none">
                                         <path d="M0 0.203125L6 6.20312L12 0.203125H0Z" fill="#457EFF" />
