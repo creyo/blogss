@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import supabase from '../config/supabase';
-import { filterArticles, filterPublicationsByUserEmail, formatDate, countArticlesByStatus, countWord, filterArticlesCount } from './filter.js';
+import { filterArticles,filterArticlesPostTypeCount, filterPublicationsByUserEmail, formatDate, countArticlesByStatus, countWord, filterArticlesCount } from './filter.js';
 import './FrontPage.css'
 
 import arrowDown from './images/arrow-down.png'
@@ -45,10 +45,7 @@ function FrontPage() {
     const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
     const [idToDelete, setIdToDelete] = useState([])
     const [sortedArticlesLength, setsortedArticlesLength] = useState(0)
-
-
-
-
+    const[postTypeCount,setpostTypeCount] = useState([])
 
 
     async function fetchArticles() {
@@ -84,7 +81,7 @@ function FrontPage() {
               user(*),
               publication(*)`
                 );
-               
+
                 if (error) {
                     throw error;
                 }
@@ -113,6 +110,8 @@ function FrontPage() {
     // Use the filtering function to get filtered articles based on selectedPublicationId and selectedPostTypeId
     useEffect(() => {
         const filteredArticles = filterArticles(articles, selectedPublicationId, selectedPostTypeId, selectedStatusId)
+        let postTypeCount = filterArticlesPostTypeCount(articles, selectedPublicationId)
+        setpostTypeCount(postTypeCount)
         const uniqueCategories = new Set();
 
         const categoriesData = filteredArticles.map(article => {
@@ -126,6 +125,7 @@ function FrontPage() {
 
             return null; // Skip duplicates
         }).filter(category => category !== null);
+        
         setFinalData(filteredArticles)
         setCategory(categoriesData)
     }, [articles, selectedPublicationId, selectedPostTypeId, selectedStatusId])
@@ -208,6 +208,7 @@ function FrontPage() {
 
     //calling count function to count status count of articles 
     let count = countArticlesByStatus(forCount)
+    
 
 
     const toggleCheckbox = () => {
@@ -252,7 +253,7 @@ function FrontPage() {
 
 
 
-    
+
 
     const applySortingAndFilteringFunctions = (data, sortBy, selectedCategoryUrl) => {
         let filteredData = data;
@@ -274,7 +275,7 @@ function FrontPage() {
         } else if (attribute === 'url') {
             filteredData = filteredData.sort((a, b) => ascending ? a.url.localeCompare(b.url) : b.url.localeCompare(a.url));
         }
-        
+
         return filteredData;
 
     };
@@ -289,7 +290,7 @@ function FrontPage() {
 
 
 
-
+   
 
     const handleConfirm = async (articleId) => {
         try {
@@ -328,6 +329,9 @@ function FrontPage() {
         fetchArticles();
     };
 
+
+    console.log(postTypeCount)
+
     return (
         <>
             <div className="containers">
@@ -350,7 +354,7 @@ function FrontPage() {
 
                             <img src={arrowDown} alt="" style={{ marginRigth: '10px' }} />
                         </div >
-                        <PostTypeButton onChangeValue={handleButtonClick} />
+                        <PostTypeButton onChangeValue={handleButtonClick}  PostTypeData={count.all} articleLength ={postTypeCount.length}/>
                     </div>
                     <div className="key setting">
                         <p>

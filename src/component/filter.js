@@ -22,6 +22,25 @@ export function filterArticles(articles, selectedPublicationId, selectedPostType
 
 
 
+export function filterArticlesPostTypeCount(articles, selectedPublicationId) {
+  if (!Array.isArray(articles)) {
+    return [];
+  }
+
+  return articles.filter((article) => {
+    const publicationId = article.publication?.publication_id;
+
+    // Check if the publication_id matches the selected value
+    const matchesPublication = selectedPublicationId === null || publicationId === selectedPublicationId;
+
+    return matchesPublication;
+  });
+}
+
+
+
+
+
 
 
 export function filterPublicationsByUserEmail(data, userEmail) {
