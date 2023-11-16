@@ -19,7 +19,6 @@ function App() {
       <BrowserRouter>
         <Routes>
           {<Route path="/login" element={<Login />} />}
-
           <Route path="/signup" element={<SignUp />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/" element={<PrivateRoute Component={FrontPage} />} />
@@ -27,7 +26,7 @@ function App() {
           <Route path="/updatearticle/:articleId" element={<PrivateRoute Component={Updatearticle} />} />
           <Route path="/blank" element={<NoDataFoundPage />} />
         </Routes>
-      </BrowserRouter>  
+      </BrowserRouter>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import description from '../images/description.png';
 import "../../component/FrontPage.css";
 import supabase from '../../config/supabase';
 
-const Icon = ({ article, article_id }) => {
+const Icon = ({ article, article_id,onDataUpdate  }) => {
     const [activeIcons, setActiveIcons] = useState({
         proof: false,
         update: false,
@@ -30,7 +30,7 @@ const Icon = ({ article, article_id }) => {
 
 
     const handleSubmit = async () => {
-        console.log(typeof (article_id))
+        
 
         try {
             // Use the `articleId` from the route to identify the article to update
@@ -45,6 +45,7 @@ const Icon = ({ article, article_id }) => {
                 // Handle error as needed (e.g., show an error message to the user)
                 return error.message;
             } else {
+                onDataUpdate();
                 console.log('done')
             }
         } catch (error) {

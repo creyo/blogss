@@ -74,15 +74,8 @@ function FrontPage() {
     }
 
 
-
-
-
     useEffect(() => {
-
-
         fetchArticles()
-
-
 
         async function fetchPublications() {
             try {
@@ -91,6 +84,7 @@ function FrontPage() {
               user(*),
               publication(*)`
                 );
+               
                 if (error) {
                     throw error;
                 }
@@ -102,8 +96,9 @@ function FrontPage() {
                 if (filterData.length === 0) {
                     navigate("/blank");
                 }
-
-                setPublications(filterData);
+                // Sorting the array based on publication_id in ascending order
+                const sortedData = filterData.sort((a, b) => a.publication_id - b.publication_id);
+                setPublications(sortedData);
             } catch (error) {
                 console.error('Error fetching publications:', error.message);
             }
@@ -257,18 +252,18 @@ function FrontPage() {
 
 
 
-   console.log(sortBy)
-      
+    
+
     const applySortingAndFilteringFunctions = (data, sortBy, selectedCategoryUrl) => {
         let filteredData = data;
-    
+
         // Filter based on the selectedCategoryUrl (if not "All")
         if (selectedCategoryUrl && selectedCategoryUrl !== "All") {
             filteredData = data.filter((item) => item.categories.url === selectedCategoryUrl);
         }
-    
+
         const { attribute, ascending } = sortBy;
-    
+
         // Apply sorting function based on the provided attribute
         if (attribute === 'title') {
             filteredData = filteredData.sort((a, b) => ascending ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title));
@@ -279,11 +274,11 @@ function FrontPage() {
         } else if (attribute === 'url') {
             filteredData = filteredData.sort((a, b) => ascending ? a.url.localeCompare(b.url) : b.url.localeCompare(a.url));
         }
-        console.log(filteredData)
-        return filteredData;
         
+        return filteredData;
+
     };
-    
+
 
 
     const sortedArticles = applySortingAndFilteringFunctions(finalData, sortBy, selectedCategory);
@@ -326,7 +321,13 @@ function FrontPage() {
     };
 
 
-    console.log(articles)
+
+    const handleDataUpdate = async () => {
+        // Perform any actions needed before re-fetching data (if necessary)
+        // Re-fetch article data
+        fetchArticles();
+    };
+
     return (
         <>
             <div className="containers">
@@ -433,7 +434,7 @@ function FrontPage() {
                         <div className="flex" onClick={() => toggleSortBy('seo_score')}>
                             <p>SEO Score</p>
                             <div className="arrows">
-                                {/* Sorting icons (adjust the SVG path as needed) */}
+
                                 {sortBy.attribute === 'seo_score' && sortBy.ascending ? (
                                     <svg style={{ marginBottom: '2px' }} xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none">
                                         <path d="M0 6L6 0L12 6H0Z" fill="#457EFF" />
@@ -466,8 +467,8 @@ function FrontPage() {
                                 {/* Sorting icons (adjust the SVG path as needed) */}
                                 {sortBy.attribute === 'url' && sortBy.ascending ? (
                                     <svg style={{ marginBottom: '2px' }} xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none">
-                                    <path d="M0 6L6 0L12 6H0Z" fill="#457EFF" />
-                                </svg>
+                                        <path d="M0 6L6 0L12 6H0Z" fill="#457EFF" />
+                                    </svg>
                                 ) : (
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="7" viewBox="0 0 12 7" fill="none">
                                         <path d="M0 0.203125L6 6.20312L12 0.203125H0Z" fill="#457EFF" />
@@ -541,7 +542,7 @@ function FrontPage() {
                                     <p>{formatDate(article.date)}</p>
                                     <p>{formatDate(article.created_at)}</p>
                                     <p>ID {article.article_id}</p>
-                                    <Icon article={article} article_id={article.article_id} />
+                                    <Icon article={article} article_id={article.article_id} onDataUpdate={handleDataUpdate} />
 
                                 </div>
 
