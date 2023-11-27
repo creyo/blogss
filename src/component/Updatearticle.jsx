@@ -29,10 +29,10 @@ function Updatearticle() {
   const [body, setBody] = useState('');
   const [note, setNote] = useState('');
   const [dateInput, setDateInput] = useState('');
-
+  const [image_alt, setImage_alt] = useState('')
   const [categoryValue, setCategoryValue] = useState('')
   const [authorValue, setAuthorValue] = useState('')
-  console.log(category_id, authorId);
+
 
 
   // Dropdown 
@@ -122,6 +122,7 @@ function Updatearticle() {
         setAuthorId(data.authors.author_id);
         setCategoryValue(data.categories.name)
         setAuthorValue(data.authors.name)
+        setImage_alt(data.image_alt)
 
         // Handle Date
         if (data.date) {
@@ -191,7 +192,7 @@ function Updatearticle() {
         status: statusId,
         publication_id: selectedPublication,
         post_type: selectedPostType,
-        url:  typedUrl,
+        url: typedUrl,
         seo_score: seoScore,
         seo_title: seoTitle,
         seo_description: seoDescription,
@@ -203,6 +204,7 @@ function Updatearticle() {
         date: dateInput, // Use dateInput as the date value
         title,
         body,
+        image_alt
       };
 
 
@@ -256,6 +258,12 @@ function Updatearticle() {
     setUpdated(true)
   }
 
+
+  const handleImage_alt = (e) => {
+    setImage_alt(e.target.value)
+  }
+
+
   const handleTag = (e) => {
     setTag(e.target.value)
     setUpdated(true)
@@ -290,7 +298,7 @@ function Updatearticle() {
 
   const handleButtonClick = (id, value) => {
     setSelectedPostType(id);
-  
+
   };
 
 
@@ -367,29 +375,30 @@ function Updatearticle() {
           ))}
         </select>
 
-        <PostTypeButton onChangeValue={handleButtonClick} formValue={selectedPostType}/>
+        <PostTypeButton onChangeValue={handleButtonClick} formValue={selectedPostType} />
       </div>
       <div className="flex" style={{ margin: '1rem 0' }}>
-        <button class="back-button" onClick={() => (window.location.href = "/")}>Back</button>
+        {/* <button class="back-button" onClick={() => (window.location.href = "/")}>Back</button> */}
+        <Link to ={"/"}>Back</Link>
         <Link to={`/addarticle/${selectedPublication}/${selectedPostType}`} className="add-page-button" onClick={handleAddPage}>
           Add {findPostTypeNameById(postTypeData, parseInt(selectedPostType))}
         </Link>
         <img src="/images/plus.svg" alt="" />
         <div className='formPage'>
-        <form action="" >
-          <div className="button-div">
-            <button className="button-light btn" type="button" onClick={resetForm}>
-              Delete
-            </button>
-            <button
-              className={`${update ? 'button-blue' : 'button-grey'}`}
-              type="submit"
-              onClick={handleSubmit}
-            >
-              Save
-            </button>
-          </div>
-        </form>
+          <form action="" >
+            <div className="button-div">
+              <button className="button-light btn" type="button" onClick={resetForm}>
+                Delete
+              </button>
+              <button
+                className={`${update ? 'button-blue' : 'button-grey'}`}
+                type="submit"
+                onClick={handleSubmit}
+              >
+                Save
+              </button>
+            </div>
+          </form>
         </div>
       </div>
       <div className="form-card">
@@ -486,6 +495,15 @@ function Updatearticle() {
         </div>
 
         <div className="flex">
+          <input
+            type="text"
+            placeholder="image_alt"
+            value={image_alt}
+            onChange={handleImage_alt}
+          />
+        </div>
+
+        <div className="flex">
           <p style={{ marginRight: '5rem' }}>Author</p>
           <AuthorDropdown onAuthorChange={handleAuthorChange} authorValue={authorValue} publicationValue={selectedPublication} required />
         </div>
@@ -530,7 +548,7 @@ function Updatearticle() {
           />
         </div>
 
-        
+
       </div>
     </div>
   );
