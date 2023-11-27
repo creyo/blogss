@@ -22,7 +22,7 @@ const customStyles = {
 function CategoryDropdown({ onCategoryChange ,categoryValue, publicationValue}) {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('real-estate'); // Adjust the initial selected category
- 
+
 
   useEffect(() => {
     async function fetchCategories() {
@@ -36,6 +36,7 @@ function CategoryDropdown({ onCategoryChange ,categoryValue, publicationValue}) 
         data = filterItemsByPublicationId(data,publicationid)
   
         setCategories(data);
+        console.log("category",data)
         
       } catch (error) {
         console.error('Error fetching categories:', error);

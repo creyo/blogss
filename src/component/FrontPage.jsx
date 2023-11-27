@@ -23,6 +23,7 @@ import Icon from './Button/Icon.jsx';
 
 
 function FrontPage() {
+    
 
     const navigate = useNavigate()
     const [articles, setArticles] = useState([]);
@@ -41,6 +42,8 @@ function FrontPage() {
     const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
     const [idToDelete, setIdToDelete] = useState([])
     const [sortedArticlesLength, setsortedArticlesLength] = useState(0)
+
+   
 
 
 
@@ -242,29 +245,7 @@ function FrontPage() {
         setCheckboxStates(newCheckboxStates);
     }
 
-
-
-
-    const sortingFunctions = [
-        {
-            key: 'title',
-            sortFunction: (a, b, ascending) => ascending ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title),
-        },
-        {
-            key: 'seo_score',
-            sortFunction: (b, a, ascending) => ascending ? b.seo_score - a.seo_score : b.seo_score - a.seo_score,
-        },
-        {
-            key: 'date',
-            sortFunction: (a, b, ascending) => ascending ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date),
-        },
-        {
-            key: 'url',
-            sortFunction: (a, b, ascending) => ascending ? a.url.localeCompare(b.url) : b.url.localeCompare(a.url),
-        },
-    ];
-
-    const applySortingAndFilteringFunctions = (data, sortingFunctions, ascending, selectedCategoryUrl) => {
+     const applySortingAndFilteringFunctions = (data, sortBy, selectedCategoryUrl) => {
         let filteredData = data;
 
         // Filter based on the selectedCategoryUrl (if not "All")
@@ -272,19 +253,29 @@ function FrontPage() {
             filteredData = data.filter((item) => item.categories.url === selectedCategoryUrl);
         }
 
-        // Apply sorting functions
-        for (const { sortFunction } of sortingFunctions) {
-            filteredData = filteredData.sort((a, b) => sortFunction(a, b, ascending));
+        const { attribute, ascending } = sortBy;
+
+        // Apply sorting function based on the provided attribute
+        if (attribute === 'title') {
+            filteredData = filteredData.sort((a, b) => ascending ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title));
+        } else if (attribute === 'seo_score') {
+            filteredData = filteredData.sort((a, b) => ascending ? a.seo_score - b.seo_score : b.seo_score - a.seo_score);
+        } else if (attribute === 'date') {
+            filteredData = filteredData.sort((a, b) => ascending ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date));
+        } else if (attribute === 'url') {
+            filteredData = filteredData.sort((a, b) => ascending ? a.url.localeCompare(b.url) : b.url.localeCompare(a.url));
         }
 
         return filteredData;
+
     };
 
+   
 
 
 
-    const sortedArticles = applySortingAndFilteringFunctions(finalData, sortingFunctions, sortBy.ascending, selectedCategory);
-
+    const sortedArticles = applySortingAndFilteringFunctions(finalData, sortBy, selectedCategory);
+    
     useEffect(() => {
         setsortedArticlesLength(sortedArticles.length)
     }, [sortedArticles])
@@ -410,7 +401,7 @@ function FrontPage() {
                         />
                     </div>
 
-                    <div className="filters">
+                                      <div className="filters">
                         <div className="flex" onClick={() => toggleSortBy('title')}>
                             <p>Title</p>
                             <div className="arrows">
@@ -430,7 +421,7 @@ function FrontPage() {
                         <div className="flex" onClick={() => toggleSortBy('seo_score')}>
                             <p>SEO Score</p>
                             <div className="arrows">
-                                {/* Sorting icons (adjust the SVG path as needed) */}
+
                                 {sortBy.attribute === 'seo_score' && sortBy.ascending ? (
                                     <svg style={{ marginBottom: '2px' }} xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none">
                                         <path d="M0 6L6 0L12 6H0Z" fill="#457EFF" />
@@ -457,11 +448,11 @@ function FrontPage() {
                                 )}
                             </div>
                         </div>
-                        <div className="flex" onClick={() => toggleSortBy('category')}>
+                        <div className="flex" onClick={() => toggleSortBy('url')}>
                             <p>Category</p>
                             <div className="arrows">
                                 {/* Sorting icons (adjust the SVG path as needed) */}
-                                {sortBy.attribute === 'category' && sortBy.ascending ? (
+                                {sortBy.attribute === 'url' && sortBy.ascending ? (
                                     <svg style={{ marginBottom: '2px' }} xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none">
                                         <path d="M0 6L6 0L12 6H0Z" fill="#457EFF" />
                                     </svg>
@@ -491,6 +482,10 @@ function FrontPage() {
 
 
                 </div>
+
+                
+
+              
 
                 {sortedArticles.map((article) => (
                     <div className="card" key={article.article_id}>

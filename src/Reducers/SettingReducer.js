@@ -11,6 +11,7 @@ const initialState = {
   author: true,
   subTitle: true,
   note: true,
+  image_alt : true
 };
 
 const settingsSlice = createSlice({
