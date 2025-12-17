@@ -13,17 +13,18 @@ function Login() {
     e.preventDefault();
 
     try {
-      const { user, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-
+     const { session,user } = data;
+      
       if (error) {
         setError(error.message);
         return;
       }
 
-      localStorage.setItem("sb-narivuecshkbtcueblcl-auth-token", user.access_token);
+      localStorage.setItem("sb-narivuecshkbtcueblcl-auth-token", session.access_token);
 
       console.log('User logged in:', user);
 
